@@ -1,0 +1,48 @@
+services:
+  stt-service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: stt-service
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      - APP_NAME=stt-service
+      - APP_ENV=production
+      - APP_HOST=0.0.0.0
+      - APP_PORT=8001
+      - STT_ENGINE=faster_whisper
+      - STT_MODEL=/app/models/small
+      - STT_DEVICE=cpu
+      - STT_COMPUTE_TYPE=int8
+      - STT_CPU_THREADS=4
+      - STT_MAX_CONCURRENT_JOBS=2
+      - HF_HUB_OFFLINE=1
+      - TRANSFORMERS_OFFLINE=1
+      - DEFAULT_LANGUAGE=id
+      - INITIAL_PROMPT=Percakapan dan pengaduan layanan publik warga Kota Medan. Mencakup Kantor Wali Kota, Disdukcapil, Dishub, Dinkes, Disdik, DPMPTSP, Bapenda, Satpol PP, kecamatan, kelurahan, kepala dinas, camat, lurah, kepling, KTP elektronik, Kartu Keluarga KK, akta kelahiran, perizinan, dan pengaduan masyarakat.
+      - MAX_AUDIO_SIZE_MB=25
+      - MAX_AUDIO_DURATION_SECONDS=300
+      - TEMP_DIR=/tmp/stt
+      - FFMPEG_BINARY=ffmpeg
+      - FFPROBE_BINARY=ffprobe
+      - API_KEY=${API_KEY:-}
+      - LOG_LEVEL=INFO
+    volumes:
+      # Mount pre-downloaded offline models directory (read-only)
+      - ./models:/app/models:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2048M
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
