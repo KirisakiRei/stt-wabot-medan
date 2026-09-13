@@ -44,9 +44,10 @@ storage/
 models/
 sample/
 
-# Project specifications & internal planning documents
+# Project specifications, internal planning documents & private guides
 PRD.md
 plan.md
+API_GUIDE.md
 
 # IDE & Editor files
 .vscode/

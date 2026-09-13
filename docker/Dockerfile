@@ -47,15 +47,15 @@ USER appuser
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     APP_HOST=0.0.0.0 \
-    APP_PORT=8001 \
+    APP_PORT=5001 \
     TEMP_DIR=/tmp/stt \
     HOME=/home/appuser
 
-EXPOSE 8001
+EXPOSE 5001
 
-# Healthcheck checking /api/v1/health
+# Healthcheck checking /stt-api/v1/health
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:8001/api/v1/health || exit 1
+    CMD curl -f http://localhost:5001/stt-api/v1/health || exit 1
 
 # Start service via Uvicorn (single worker to prevent duplicated model memory footprint)
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5001"]

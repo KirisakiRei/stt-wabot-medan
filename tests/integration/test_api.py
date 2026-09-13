@@ -46,7 +46,7 @@ def setup_test_app_state():
 async def test_health_endpoint():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
-        response = await client.get("/api/v1/health")
+        response = await client.get("/stt-api/v1/health")
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "ok"
@@ -67,7 +67,7 @@ async def test_transcriptions_endpoint_success():
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
-        response = await client.post("/api/v1/transcriptions", files=files, data=data)
+        response = await client.post("/stt-api/v1/transcriptions", files=files, data=data)
         assert response.status_code == 200
         result = response.json()
         assert result["success"] is True
@@ -86,13 +86,13 @@ async def test_transcriptions_endpoint_unauthorized(monkeypatch):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         # 1. Missing API Key
-        resp_no_key = await client.post("/api/v1/transcriptions", files=files)
+        resp_no_key = await client.post("/stt-api/v1/transcriptions", files=files)
         assert resp_no_key.status_code == 401
         assert resp_no_key.json()["error"]["code"] == "INVALID_API_KEY"
 
         # 2. Wrong API Key
         resp_wrong_key = await client.post(
-            "/api/v1/transcriptions",
+            "/stt-api/v1/transcriptions",
             files=files,
             headers={"X-API-Key": "wrong-key"},
         )
@@ -101,7 +101,7 @@ async def test_transcriptions_endpoint_unauthorized(monkeypatch):
 
         # 3. Correct API Key
         resp_ok = await client.post(
-            "/api/v1/transcriptions",
+            "/stt-api/v1/transcriptions",
             files=files,
             headers={"X-API-Key": "super-secret-key"},
         )
@@ -117,7 +117,7 @@ async def test_transcriptions_endpoint_unsupported_format():
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
-        response = await client.post("/api/v1/transcriptions", files=files)
+        response = await client.post("/stt-api/v1/transcriptions", files=files)
         assert response.status_code == 415
         data = response.json()
         assert data["success"] is False
@@ -132,7 +132,7 @@ async def test_transcriptions_endpoint_empty_file():
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
-        response = await client.post("/api/v1/transcriptions", files=files)
+        response = await client.post("/stt-api/v1/transcriptions", files=files)
         assert response.status_code == 400
         data = response.json()
         assert data["success"] is False

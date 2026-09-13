@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "stt-service"
     APP_ENV: str = "development"
     APP_HOST: str = "0.0.0.0"
-    APP_PORT: int = 8001
+    APP_PORT: int = 5001
 
     # STT Engine
     STT_ENGINE: str = "faster_whisper"
